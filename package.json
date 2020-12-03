@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/andrewbruner/blog/issues"
   },
-  "homepage": "https://github.com/andrewbruner/blog#readme"
+  "homepage": "https://github.com/andrewbruner/blog#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongodb": "^3.6.3",
+    "vue": "^2.6.12"
+  }
 }
