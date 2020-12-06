@@ -17,12 +17,14 @@ const port = 3000;
 const notFound = { message: '404: Page not found.'};
 
 // Routes
-app.get('/', async (req, res) => {
+app.use(express.static('public'));
+
+app.get('/api', async (req, res) => {
     const posts = await Post.find();
     res.json(posts);
 });
 
-app.get('/posts/:postId', async (req, res) => {
+app.get('/api/posts/:postId', async (req, res) => {
     const post = await Post.findById(req.params.postId).catch(err => 'error');
     post != 'error' ? res.json(post) : res.status(404).json(notFound);
 });
