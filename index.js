@@ -23,6 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/api', async (req, res) => {
     const posts = await Post.find();
+    posts.reverse();
     res.json(posts);
 });
 
