@@ -9,19 +9,23 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 const postSchema = new mongoose.Schema({ title: String, body: String });
 const Post = mongoose.model('Post', postSchema);
+const userSchema = new mongoose.Schema({ username: String, password: String });
+const User = mongoose.model('User', userSchema);
 
 // Server Setup (Express)
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
 const port = 3000;
 const notFound = { message: '404: Page not found.' };
 
-// Middleware
-app.use(express.static('public'));
+// Middleware (Body/Cookie Parsers)
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 
-// Routes
+// ROUTES (API/Authentication/Static/Application/404)
+// API Routes
 app.get('/api', (req, res) => {
     Post.find()
         .then(posts => posts.reverse())
@@ -35,13 +39,42 @@ app.get('/api/posts/:postId', (req, res) => {
         .catch(err => res.status(404).json(notFound));
 });
 
-app.post('/', (req, res) => {
+// Authentication Route
+app.post('/authenticate', (req, res) => {
+    User.findOne({ username: req.body.username })
+        .then(user => {
+            if (user.password == req.body.password) {
+                res.cookie('authenticated', 'true');
+                if (req.cookies.redirectTo) {
+                    res.redirect(req.cookies.redirectTo);
+                } else {
+                    res.redirect('/');
+                }
+            } else {
+                res.redirect('/authenticate');
+            };
+        })
+        .catch(err => res.status(404).json(notFound));
+});
+
+// Static Routes (Public/Private)
+app.use(express.static('public'));
+app.use((req, res, next) => {
+    req.cookies.authenticated == 'true' ? next() : (() => {
+        res.cookie('redirectTo', req.path);
+        res.redirect('/authenticate');
+    })();
+}, express.static('private'));
+
+// Application Routes
+app.post('/new-post', (req, res) => {
     new Post({ title: req.body.newPostTitle, body: req.body.newPostBody }).save()
         .then(post => console.log(`${post.title} created successfully!`))
         .then(post => res.redirect('/'))
         .catch(err => console.error(err));
 });
 
+// 404 Route
 app.use((req, res) => {
     res.status(404).json(notFound);
 });
