@@ -12,6 +12,16 @@ const Post = mongoose.model('Post', postSchema);
 const userSchema = new mongoose.Schema({ username: String, password: String });
 const User = mongoose.model('User', userSchema);
 
+// Markdown Parsing Setup (Marked/DOMPurify/JSDOM)
+const marked = require('marked');
+marked.setOptions({
+    headerIds: false 
+});
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
+
 // Server Setup (Express)
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -96,9 +106,9 @@ app.get('/new-post', isAuthenticated, express.static('private'));
 
 // Application Routes
 app.post('/new-post', (req, res) => {
-    new Post({ title: req.body.newPostTitle, body: req.body.newPostBody })
-        .save()
-        .then((post) => console.log(`${post.title} created successfully!`))
+    const clean = DOMPurify.sanitize(req.body.newPostBody);
+    const markdown = marked(clean);
+    new Post({ title: req.body.newPostTitle, body: markdown }).save()
         .then((post) => res.redirect('/'))
         .catch((err) => console.error(err));
 });
