@@ -7,7 +7,11 @@ const url = `mongodb+srv://admin:${process.env.PASSWORD}@blog.svxno.mongodb.net/
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-const postSchema = new mongoose.Schema({ title: String, markdown: String, html: String });
+const postSchema = new mongoose.Schema({
+    title: String,
+    markdown: String,
+    html: String,
+});
 const Post = mongoose.model('Post', postSchema);
 const userSchema = new mongoose.Schema({ username: String, password: String });
 const User = mongoose.model('User', userSchema);
@@ -122,7 +126,11 @@ app.get('/new-post', isAuthenticated, express.static('private'));
 app.post('/new-post', (req, res) => {
     const clean = DOMPurify.sanitize(req.body.newPostBody);
     const html = marked(clean);
-    new Post({ title: req.body.newPostTitle, markdown: req.body.newPostBody, html: html })
+    new Post({
+        title: req.body.newPostTitle,
+        markdown: req.body.newPostBody,
+        html: html,
+    })
         .save()
         .then((post) => res.redirect('/'))
         .catch((err) => console.error(err));
