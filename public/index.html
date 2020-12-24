@@ -22,7 +22,9 @@
             <div class="card" v-for="post in posts" v-bind:key="post._id">
                 <div class="card-body">
                     <h1 class="card-title">{{ post.title }}</h1>
-                    <div class="card-text"><span v-html="post.html"></span></div>
+                    <div class="card-text">
+                        <span v-html="post.html"></span>
+                    </div>
                 </div>
             </div>
         </div>
