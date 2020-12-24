@@ -7,10 +7,24 @@ const url = `mongodb+srv://admin:${process.env.PASSWORD}@blog.svxno.mongodb.net/
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-const postSchema = new mongoose.Schema({ title: String, body: String });
+const postSchema = new mongoose.Schema({
+    title: String,
+    markdown: String,
+    html: String,
+});
 const Post = mongoose.model('Post', postSchema);
 const userSchema = new mongoose.Schema({ username: String, password: String });
 const User = mongoose.model('User', userSchema);
+
+// Markdown Parsing Setup (Marked/DOMPurify/JSDOM)
+const marked = require('marked');
+marked.setOptions({
+    headerIds: false,
+});
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
 
 // Server Setup (Express)
 const express = require('express');
@@ -26,23 +40,31 @@ const passport = require('passport');
 const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
 // set up passport strategy
-passport.use(new LocalStrategy(
-    (username, password, done) => {
+passport.use(
+    new LocalStrategy((username, password, done) => {
         User.findOne({ username: username }, (err, user) => {
-            if (err) { return done(err) }
-            if (!user) { return done(null, false); }
-            if (user.password != password) { return done(null, false); }
+            if (err) {
+                return done(err);
+            }
+            if (!user) {
+                return done(null, false);
+            }
+            if (user.password != password) {
+                return done(null, false);
+            }
             return done(null, user);
         });
-    }
-));
+    })
+);
 // serialize/deserialize user instance to/from session
 passport.serializeUser((user, done) => {
     done(null, user.id);
-  });
+});
 passport.deserializeUser((id, done) => {
     User.findById(id, (err, user) => {
-        if (err) { return done(err); }
+        if (err) {
+            return done(err);
+        }
         done(null, user);
     });
 });
@@ -58,11 +80,13 @@ const isAuthenticated = (req, res, next) => {
 // Middleware (Body/Cookie Parsers, Passport)
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(session({
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.SECRET
-}));
+app.use(
+    session({
+        resave: false,
+        saveUninitialized: false,
+        secret: process.env.SECRET,
+    })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -84,8 +108,12 @@ app.get('/api/posts/:postId', (req, res) => {
 });
 
 // Authentication Route
-app.post('/authenticate', passport.authenticate('local', { failureRedirect: '/authenticate' }),
-    (req, res) => { res.redirect(req.cookies.redirectTo || '/'); }
+app.post(
+    '/authenticate',
+    passport.authenticate('local', { failureRedirect: '/authenticate' }),
+    (req, res) => {
+        res.redirect(req.cookies.redirectTo || '/');
+    }
 );
 
 // Static Routes (Public)
@@ -96,9 +124,14 @@ app.get('/new-post', isAuthenticated, express.static('private'));
 
 // Application Routes
 app.post('/new-post', (req, res) => {
-    new Post({ title: req.body.newPostTitle, body: req.body.newPostBody })
+    const clean = DOMPurify.sanitize(req.body.newPostBody);
+    const html = marked(clean);
+    new Post({
+        title: req.body.newPostTitle,
+        markdown: req.body.newPostBody,
+        html: html,
+    })
         .save()
-        .then((post) => console.log(`${post.title} created successfully!`))
         .then((post) => res.redirect('/'))
         .catch((err) => console.error(err));
 });
