@@ -18,7 +18,11 @@
     </head>
     <body>
         <div class="container" id="app" v-cloak>
-            <h1 class="h2 mt-3 mb-4">Andrew Bruner | Weblog</h1>
+            <nav class="navbar navbar-light">
+                <a class="navbar-brand d-sm-none" href="#"><small class="font-weight-light">Andrew Bruner | Weblog</small></a>
+                <a class="navbar-brand font-weight-light d-none d-sm-flex" href="#">Andrew Bruner | Weblog</a>
+                <a class="btn btn-outline-dark btn-sm font-weight-light" href="/authenticate" role="button">Log In</a>
+            </nav>
             <div class="card" v-for="post in posts" v-bind:key="post._id">
                 <div class="card-body">
                     <h1 class="card-title">{{ post.title }}</h1>
