@@ -74,6 +74,7 @@ const isAuthenticated = (req, res, next) => {
         res.cookie('redirectTo', req.path);
         return res.redirect('/authenticate');
     }
+    res.clearCookie('redirectTo');
     return next();
 };
 
