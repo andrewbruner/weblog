@@ -2,6 +2,7 @@ const vm = new window.Vue({
     el: '#app',
     data: {
         posts: [],
+        user: []
     },
 });
 

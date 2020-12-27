@@ -32,6 +32,8 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const app = express();
 const port = 3000;
+app.set('views', './views');
+app.set('view engine', 'pug');
 const notFound = { message: '404: Page not found.' };
 
 // Authentication Setup (Passport)
@@ -92,6 +94,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // ROUTES (API/Authentication/Public/Private/Application/404)
+app.get('/test', (req, res) => {
+    res.render('index', {
+        user: [{ username: 'andrewbruner' }],
+        posts: [{ title: 'Blog Title', html: '<b>this is the body</b>' }]
+    });
+});
+
 // API Routes
 app.get('/api', (req, res) => {
     Post.find()
