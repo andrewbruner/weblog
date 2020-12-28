@@ -10,22 +10,29 @@ html(lang='en')
             integrity='sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2'
             crossorigin='anonymous'
         )
-        //- style.
-        //-     [v-cloak] {
-        //-         display: none;
-        //-     }
     body
-        div(class=['container'] id='app' v-cloak)
+        div(class=['container'] id='app')
             nav(class=['navbar', 'navbar-light'])
                 a(class=['navbar-brand', 'd-sm-none'] href='#')
                     small(class=['font-weight-light']) Andrew Bruner #{'|'}' Weblog
-                a(class=['navbar-brand', 'font-weight-light', 'd-none', 'd-sm-flex'] href='#') Andrew Bruner #{'|'} Weblog
+                a(
+                    class=['navbar-brand', 'font-weight-light', 'd-none', 'd-sm-flex']
+                    href='#'
+                ) Andrew Bruner #{'|'} Weblog
                 if !user.length
-                    a(class=['btn', 'btn-outline-dark', 'btn-sm', 'font-weight-light'] href='/authenticate' role='button') Log In
+                    a(
+                        class=['btn', 'btn-outline-dark', 'btn-sm', 'font-weight-light']
+                        href='/authenticate'
+                        role='button'
+                    ) Log In
                 if user.length
                     template
                         span Welcome #{user[0].username}
-                        a(class=['btn', 'btn-outline-dark', 'btn-sm', 'font-weight-light'] href='/logout' role='button') Log Out
+                        a(
+                            class=['btn', 'btn-outline-dark', 'btn-sm', 'font-weight-light']
+                            href='/logout'
+                            role='button'
+                        ) Log Out
             each post in posts
                 div(class=['card'])
                     div(class=['card-body'])
