@@ -1,0 +1,25 @@
+extends layout
+
+block authentication
+
+block content
+    form(action='/authenticate' method='post')
+        div(class=['form-group'])
+            label(for='username') Username
+            input(
+                class=['form-control']
+                id='username'
+                name='username'
+                type='text'
+            )
+            label(for='password') Password
+            input(
+                class='form-control'
+                id='password'
+                name='password'
+                type='password'
+            )
+        button(
+            class=['btn', 'btn-primary']
+            type='submit'
+        ) Submit

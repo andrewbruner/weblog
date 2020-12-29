@@ -1,0 +1,19 @@
+extends layout
+
+block content
+    form(action='/new-post' method='post')
+        div(class=['form-group'])
+            label(for='newPostTitle') Title
+            input(
+                class=['form-control']
+                id='newPostTitle'
+                name='newPostTitle'
+                type='text'
+            )
+        div(class=['form-group'])
+            textarea(
+                class=['form-control']
+                id='newPostBody'
+                name='newPostBody'
+            )
+        button(class=['btn', 'btn-primary'] type='submit') Post
