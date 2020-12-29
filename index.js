@@ -76,7 +76,6 @@ const isAuthenticated = (req, res, next) => {
         res.cookie('redirectTo', req.path);
         return res.redirect('/authenticate');
     }
-    res.clearCookie('redirectTo');
     return next();
 };
 
@@ -93,47 +92,43 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ROUTES (API/Authentication/Public/Private/Application/404)
-app.get('/test', (req, res) => {
-    res.render('index', {
-        user: [{ username: 'andrewbruner' }],
-        posts: [{ title: 'Blog Title', html: '<b>this is the body</b>' }]
-    });
-});
-
-// API Routes
-app.get('/api', (req, res) => {
+// ROUTES
+// Root Route
+app.get('/', (req, res) => {
     Post.find()
-        .then((posts) => posts.reverse())
-        .then((posts) => res.json(posts))
+        .then((posts) => {
+            posts.reverse();
+            res.render('posts', { user: req.user, posts: posts });
+        })
         .catch((err) => res.status(404).json(notFound));
 });
 
-app.get('/api/posts/:postId', (req, res) => {
-    Post.findById(req.params.postId)
-        .then((post) =>
-            post ? res.json(post) : res.status(404).json(notFound)
-        )
-        .catch((err) => res.status(404).json(notFound));
+// Authentication Routes
+app.get('/authenticate', (req, res) => {
+    req.user
+        ? res.redirect('/')
+        : res.render('authenticate');
 });
-
-// Authentication Route
 app.post(
     '/authenticate',
     passport.authenticate('local', { failureRedirect: '/authenticate' }),
     (req, res) => {
-        res.redirect(req.cookies.redirectTo || '/');
+        const redirectTo = req.cookies.redirectTo || '/';
+        res.clearCookie('redirectTo');
+        res.redirect(redirectTo);
     }
 );
+app.get('/logout', (req, res) => {
+    req.logout();
+    res.clearCookie('connect.sid');
+    res.redirect('/');
+});
 
-// Static Routes (Public)
-app.use(express.static('public'));
-
-// Static Routes (Private)
-app.get('/new-post', isAuthenticated, express.static('private'));
-
-// Application Routes
-app.post('/new-post', (req, res) => {
+// New Post Route
+app.get('/new-post', isAuthenticated, (req, res) => {
+    res.render('new-post', { user: req.user });
+});
+app.post('/new-post', isAuthenticated, (req, res) => {
     const clean = DOMPurify.sanitize(req.body.newPostBody);
     const html = marked(clean);
     new Post({
