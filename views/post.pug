@@ -1,0 +1,37 @@
+extends layout
+
+block content
+    form(action=`${post ? '/update-post' : '/create-post'}` method='post')
+        div(class=['form-group'])
+            label(for='postTitle') Title
+            input(
+                autofocus=(post ? false : true)
+                class=['form-control']
+                id='postTitle'
+                name='postTitle'
+                type='text'
+                value=`${post ? post.title : ''}` 
+            )
+        div(class=['form-group'])
+            textarea(
+                class=['form-control']
+                id='postBody'
+                name='postBody'
+                rows='15'
+            ) #{post ? post.markdown : ''}
+        button(
+            class=['btn', 'btn-primary']
+            type='submit'
+        ) #{post ? 'Update' : 'Post'}
+        if post
+            input(
+                id='postId'
+                name='postId'
+                type='hidden'
+                value=`${post.id}`
+            )
+            button(
+                class=['btn', 'btn-danger', 'ml-1']
+                formaction='/delete-post'
+                type='submit'
+            ) Delete
