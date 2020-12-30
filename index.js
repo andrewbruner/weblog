@@ -4,7 +4,7 @@ require('dotenv').config();
 // Database Setup (MongoDB/Mongoose)
 const mongoose = require('mongoose');
 const url = `mongodb+srv://admin:${process.env.PASSWORD}@blog.svxno.mongodb.net/blog?retryWrites=true&w=majority`;
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(url, { useFindAndModify: false, useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 const postSchema = new mongoose.Schema({
@@ -93,13 +93,18 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // ROUTES
-// Root Route
+// Posts Routes
 app.get('/', (req, res) => {
     Post.find()
         .then((posts) => {
             posts.reverse();
             res.render('posts', { user: req.user, posts: posts });
         })
+        .catch((err) => res.status(404).json(notFound));
+});
+app.get('/posts/:postId', (req, res) => {
+    Post.findById(req.params.postId)
+        .then((post) => res.render('posts', { user: req.user, posts: [post] }))
         .catch((err) => res.status(404).json(notFound));
 });
 
@@ -126,19 +131,55 @@ app.get('/logout', (req, res) => {
 
 // New Post Route
 app.get('/new-post', isAuthenticated, (req, res) => {
-    res.render('new-post', { user: req.user });
+    res.render('post', { user: req.user });
 });
-app.post('/new-post', isAuthenticated, (req, res) => {
-    const clean = DOMPurify.sanitize(req.body.newPostBody);
+app.post('/create-post', isAuthenticated, (req, res) => {
+    const clean = DOMPurify.sanitize(req.body.postBody);
     const html = marked(clean);
     new Post({
-        title: req.body.newPostTitle,
-        markdown: req.body.newPostBody,
-        html: html,
+        title: req.body.postTitle,
+        markdown: req.body.postBody,
+        html: html
     })
         .save()
         .then((post) => res.redirect('/'))
         .catch((err) => console.error(err));
+});
+
+// Update Post Routes
+app.get('/posts/:postId/update', isAuthenticated, (req, res) => {
+    Post.findById(req.params.postId)
+        .then((post) => res.render('post', { user: req.user, post: post }))
+});
+app.post('/update-post', isAuthenticated, (req, res) => {
+    const clean = DOMPurify.sanitize(req.body.postBody);
+    const html = marked(clean);
+    Post.findByIdAndUpdate(
+        req.body.postId, {
+            title: req.body.postTitle,
+            markdown: req.body.postBody,
+            html: html
+        }, (err, post) => {
+            if (err) {
+                res.status(404).json(notFound);
+            } else {
+                res.redirect(`/posts/${post.id}`);
+            }
+        }
+    );
+});
+
+// Delete Post Route
+app.post('/delete-post', isAuthenticated, (req, res) => {
+    Post.findByIdAndDelete(
+        req.body.postId, (err, post) => {
+            if (err) {
+                res.status(404).json(notFound);
+            } else {
+                res.redirect('/');
+            }
+        }
+    );
 });
 
 // 404 Route
