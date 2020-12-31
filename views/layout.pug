@@ -20,14 +20,19 @@ html(lang='en')
                 block authentication
                     if !user
                         a(
-                            class=['btn', 'btn-outline-dark', 'btn-sm', 'font-weight-light']
+                            class=['btn', 'btn-outline-success', 'btn-sm', 'font-weight-light']
                             href='/authenticate'
                             role='button'
                         ) Log In
                     if user
                         span(class=['font-weight-light']) Welcome #{user.username}
                             a(
-                                class=['btn', 'btn-outline-dark', 'btn-sm', 'font-weight-light', 'ml-2']
+                                class=['btn', 'btn-outline-success', 'btn-sm', 'font-weight-light', 'ml-2']
+                                href='/new-post'
+                                role='button'
+                            ) New Post
+                            a(
+                                class=['btn', 'btn-outline-danger', 'btn-sm', 'font-weight-light', 'ml-2']
                                 href='/logout'
                                 role='button'
                             ) Log Out
