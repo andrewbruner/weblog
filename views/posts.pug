@@ -2,17 +2,16 @@ extends layout
 
 block content
     each post in posts
-        div(class=['card'])
-            div(class=['card-body'])
-                h1(class=['card-title']) #{post.title}
+        div(class=['card'] style='border-top: none; margin: 0')
+            div(class=['card-section'])
+                h1 #{post.title}
                     if user
-                        a(class=['close'] href=`/posts/${post.id}/update` role='button')
+                        a(class=['float-right'] href=`/posts/${post.id}/update` style='color: gray')
                             svg(
                                 xmlns='http://www.w3.org/2000/svg'
                                 width='16'
                                 height='16'
                                 fill='currentColor'
-                                class=['bi', 'bi-pencil-square']
                                 viewBox='0 0 16 16'
                             )
                                 path(
@@ -22,5 +21,5 @@ block content
                                     fill-rule='evenodd'
                                     d='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z'
                                 )
-                div(class=['card-text'])
+                div
                     != post.html

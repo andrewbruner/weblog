@@ -3,32 +3,37 @@ html(lang='en')
     head
         meta(charset='utf-8')
         meta(content='width=device-width, initial-scale=1.0' name='viewport')
-        title Andrew Bruner #{'|'} Weblog
+        title Andrew Bruner #{'|'} Web Developer
         link(
             crossorigin='anonymous'
-            href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css'
-            integrity='sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2'
+            href='https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation.min.css'
+            integrity='sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I='
             rel='stylesheet'
         )
     body
-        div(class=['container'] id='app')
-            nav(class=['navbar', 'navbar-light'])
-                a(
-                    class=['font-weight-light', 'navbar-brand']
-                    href='/'
-                ) Andrew Bruner #{'|'} Weblog
-                block authentication
+        div(class=['top-bar'])
+            div(class=['top-bar-left'])
+                ul(class=['menu'])
+                    li
+                        a(class=['lead'] href='/' style='color: black') Andrew Bruner
                     if !user
-                        a(
-                            class=['btn', 'btn-outline-dark', 'btn-sm', 'font-weight-light']
-                            href='/authenticate'
-                            role='button'
-                        ) Log In
-                    if user
-                        span(class=['font-weight-light']) Welcome #{user.username}
-                            a(
-                                class=['btn', 'btn-outline-dark', 'btn-sm', 'font-weight-light', 'ml-2']
-                                href='/logout'
-                                role='button'
-                            ) Log Out
-            block content
+                        li(style='margin-left: auto')
+                            a(href='https://github.com/andrewbruner' style='color: black')
+                                img(src='https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/svgs/fi-social-github.svg' style='width: 25px')
+                        li
+                            a(href='https://twitter.com/andrewbruner' style='color: black')
+                                img(src='https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/svgs/fi-social-twitter.svg' style='width: 25px')
+            if user
+                div(class=['top-bar-right'])
+                    ul(class=['menu'])
+                        block new post
+                            li
+                                a(href='/new-post' style='color: black') New Post
+                        li
+                            a(href='/logout' style='color: black') Log Out
+        block content
+        block footer
+            ul(class=['breadcrumbs'] style='padding-top: 1em; padding-left: 1em')
+                li &copy; Andrew Bruner 2021
+                li
+                    a(href='/authenticate' style='color: gray') Admin

@@ -1,26 +1,24 @@
 extends layout
 
-block authentication
-
 block content
     form(action='/authenticate' method='post')
-        div(class=['form-group'])
-            label(for='username') Username
-            input(
-                autofocus
-                class=['form-control']
-                id='username'
-                name='username'
-                type='text'
-            )
-            label(for='password') Password
-            input(
-                class='form-control'
-                id='password'
-                name='password'
-                type='password'
-            )
-        button(
-            class=['btn', 'btn-primary']
-            type='submit'
-        ) Submit
+        div(class=['card'] style='border: none')
+            div(class=['card-section', 'grid-container'])
+                label(for='username') Username
+                input(
+                    autofocus
+                    id='username'
+                    name='username'
+                    type='text'
+                )
+                label(for='password') Password
+                input(
+                    id='password'
+                    name='password'
+                    type='password'
+                )
+                button(
+                    class=['button']
+                    type='submit'
+                ) Submit
+block footer
