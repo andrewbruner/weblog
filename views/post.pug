@@ -34,8 +34,17 @@ block content
                             value=`${post.id}`
                         )
                         button(
-                            class=['button']
+                            class=['alert', 'button']
                             formaction='/delete-post'
                             type='submit'
                         ) Delete
+                        a(
+                            class=['button','secondary']
+                            href=`/posts/${post.id}`
+                        ) Cancel
+                    if !post
+                        a(
+                            class=['button', 'secondary']
+                            href=`/`
+                        ) Cancel
 block footer
