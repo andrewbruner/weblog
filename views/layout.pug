@@ -13,9 +13,9 @@ html(lang='en')
     body
         div(class=['top-bar'])
             div(class=['top-bar-left'])
-                ul(class=['menu'])
+                ul(class=['menu', 'align-middle'])
                     li
-                        a(class=['lead'] href='/' style='color: black') Andrew Bruner
+                        a(class=['h2'] href='/' style='color: black') Andrew Bruner
                     if !user
                         li(style='margin-left: auto')
                             a(href='https://github.com/andrewbruner' style='color: black')
@@ -25,12 +25,12 @@ html(lang='en')
                                 img(src='https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/svgs/fi-social-twitter.svg' style='width: 25px')
             if user
                 div(class=['top-bar-right'])
-                    ul(class=['menu'])
+                    ul(class=['menu', 'align-middle'])
                         block new post
                             li
-                                a(href='/new-post' style='color: black') New Post
+                                a(class=['button', 'secondary'] href='/new-post' style='border-radius: 30px; margin: 2px') New Post
                         li
-                            a(href='/logout' style='color: black') Log Out
+                            a(class=['button', 'secondary'] href='/logout' style='border-radius: 30px; margin: 2px') Log Out
         block content
         block footer
             ul(class=['breadcrumbs'] style='padding-top: 1em; padding-left: 1em')
